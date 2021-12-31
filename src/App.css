@@ -6,4 +6,15 @@
   .calc-body {
     max-height: 50vh;
   }
+
+  .calc-title {
+    display: none;
+  }
+}
+
+@media screen and (max-width: 540px) {
+  .calc-body {
+    position: absolute;
+    bottom: 0;
+  }
 }

@@ -10,7 +10,8 @@
 
 ## ToDo
 
-- [ ] 計算機手機版型外觀，用 tailwindcss 做
+- [x] 計算機手機版型外觀，用 tailwindcss 做
+- [x] 計算機電腦版拖拉功能，用 [react-draggable](https://www.npmjs.com/package/react-draggable) 套件做
 - [ ] 基本計算機功能
   - [ ] 加、減、乘
   - [ ] 除法，可能要注意小數的處理
@@ -18,5 +19,4 @@
 - [ ] 算式的更新
 - [ ] 計算結果的更新
 - [ ] 數字計算結果大於上限顯示「超過數字上限」。
-- [ ] 計算機電腦版拖拉功能
-- [ ] build 到 gh-page
+- [x] build 到 gh-page
