@@ -2,6 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
+/* .input-display {
+  direction: rtl;
+} */
+
 @media screen and (max-width: 768px) {
   .calc-body {
     max-height: 50vh;
