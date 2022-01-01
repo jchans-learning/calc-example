@@ -4,6 +4,7 @@ import CalcButton from "./components/CalcButton";
 import CalcOperator from "./components/CalcOperator";
 
 import "./App.css";
+import CalcHistoryBar from "./components/CalcHistoryBar";
 
 function App() {
   const [dragDisable, setDragDisable] = useState(true);
@@ -18,7 +19,7 @@ function App() {
   // 確認視窗大小來決定一開啟畫面的時候，計算機是否可拖拉，目前設定判斷點為 768px
   useEffect(() => {
     if (localStorage.getItem("lastCalcProcess")) {
-      console.log(localStorage.getItem("lastCalcProcess"));
+      // console.log(localStorage.getItem("lastCalcProcess"));
       setCalcProcess(JSON.parse(localStorage.getItem("lastCalcProcess")));
     }
     if (window.innerWidth >= 768) {
@@ -28,9 +29,6 @@ function App() {
     }
     return dragDisable;
   }, [dragDisable]);
-
-  // 自己想做的: 之前計算的紀錄
-  console.log(calcHistory);
 
   // 按鍵功能設定
   // C 鍵功能
@@ -114,9 +112,7 @@ function App() {
   };
 
   // Save history
-  console.log("history: ", calcHistory);
   const saveHistory = () => {
-    console.log(calcProcess);
     let arr2 = [...calcHistory];
     arr2.push([...calcProcess, inputNumStr]);
     setCalcHistory(arr2);
@@ -124,6 +120,20 @@ function App() {
 
   return (
     <>
+      <div className="calc-history calc-body p-1 m-2 md:w-56 rounded overflow-auto">
+        <h2 className="text-center text-lg font-bold mb-2">計算紀錄</h2>
+        {calcHistory.map((element) => (
+          <CalcHistoryBar
+            calcHisElement={element}
+            key={calcHistory.indexOf(element)}
+            historyId={calcHistory.indexOf(element)}
+            calcHistory={calcHistory}
+            setCalcHistory={setCalcHistory}
+            setCalcProcess={setCalcProcess}
+            setInputNumStr={setInputNumStr}
+          />
+        ))}
+      </div>
       <Draggable disabled={dragDisable}>
         <div className="calc-body bg-gray-300 p-2 m-2 md:w-56 rounded overflow-auto">
           <h1 className="calc-title text-center text-lg font-bold mb-2">
