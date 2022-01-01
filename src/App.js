@@ -15,7 +15,7 @@ function App() {
   // const [calcHistory, setCalcHistory] = useState([]);
   // console.log(calcProcess);
 
-  // Check window size on start and set calc draggable if window size >= 768px
+  // 確認視窗大小來決定一開啟畫面的時候，計算機是否可拖拉，目前設定判斷點為 768px
   useEffect(() => {
     if (window.innerWidth >= 768) {
       setDragDisable(false);
@@ -25,23 +25,34 @@ function App() {
     return dragDisable;
   }, [dragDisable]);
 
-  // functions for operator buttons
+  // 按鍵功能設定
+  // C 鍵功能
   const clearInputStr = () => setInputNumStr("");
+
+  // 退位鍵，刪除輸入的一碼數字或者算式裡的一個數字或一個運算子
   const deleteOneNumChar = () => {
     if (Number(inputNumStr) !== 0) {
       setInputNumStr(inputNumStr.slice(0, -1));
     } else {
+      if (calcProcess.length === 0) {
+        setIsProcessed(false);
+        return;
+      }
       console.log(calcProcess);
       let arr = [...calcProcess];
       arr.pop();
       setCalcProcess(arr);
     }
   };
+
+  // AC 鍵功能
   const allClear = () => {
     setInputNumStr("");
     setCalcProcess([]);
     setIsProcessed(false);
   };
+
+  // 運算子按鈕功能
   const arithBtn = (arith) => {
     let arr = [...calcProcess];
     if (isProcessed === true) {
@@ -53,7 +64,10 @@ function App() {
     setInputNumStr("");
     setCalcProcess(arr);
   };
+
+  // " = " 的按鍵功能
   const calcResult = () => {
+    if (isProcessed) return;
     if (calcProcess.length === 0) return;
     let arr = [...calcProcess, inputNumStr];
 
