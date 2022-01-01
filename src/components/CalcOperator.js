@@ -10,7 +10,7 @@ function CalcOperator(props) {
         <button
           className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-1 rounded md-css-adjust md:w-11 "
           onClick={() => {
-            console.log(buttonText);
+            // console.log(buttonText);
             buttonFunc(buttonText);
           }}
         >
