@@ -27,15 +27,23 @@ function App() {
 
   // 按鍵功能設定
   // C 鍵功能
-  const clearInputStr = () => setInputNumStr("");
+  const clearInputStr = () => {
+    setInputNumStr("");
+    if (isProcessed) setIsProcessed(false);
+  };
 
   // 退位鍵，刪除輸入的一碼數字或者算式裡的一個數字或一個運算子
   const deleteOneNumChar = () => {
+    if (isProcessed) {
+      setInputNumStr("");
+      setIsProcessed(false);
+      return;
+    }
     if (Number(inputNumStr) !== 0) {
       setInputNumStr(inputNumStr.slice(0, -1));
     } else {
+      setIsProcessed(false);
       if (calcProcess.length === 0) {
-        setIsProcessed(false);
         return;
       }
       console.log(calcProcess);
@@ -59,7 +67,7 @@ function App() {
       arr.push(arith);
       setIsProcessed(false);
     } else {
-      arr.push(inputNumStr, arith);
+      inputNumStr.length === 0 ? arr.push(arith) : arr.push(inputNumStr, arith);
     }
     setInputNumStr("");
     setCalcProcess(arr);
@@ -120,7 +128,7 @@ function App() {
   return (
     <>
       <Draggable disabled={dragDisable}>
-        <div className="calc-body bg-gray-300 p-2 m-2 md:w-56 rounded">
+        <div className="calc-body bg-gray-300 p-2 m-2 md:w-56 rounded overflow-auto">
           <h1 className="calc-title text-center text-lg font-bold mb-2">
             計算機網頁版
           </h1>
