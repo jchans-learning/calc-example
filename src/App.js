@@ -12,11 +12,15 @@ function App() {
   const [isProcessed, setIsProcessed] = useState(false);
 
   // TODO: 自己想做的: 之前計算的紀錄
-  // const [calcHistory, setCalcHistory] = useState([]);
+  const [calcHistory, setCalcHistory] = useState([]);
   // console.log(calcProcess);
 
   // 確認視窗大小來決定一開啟畫面的時候，計算機是否可拖拉，目前設定判斷點為 768px
   useEffect(() => {
+    if (localStorage.getItem("lastCalcProcess")) {
+      console.log(localStorage.getItem("lastCalcProcess"));
+      setCalcProcess(JSON.parse(localStorage.getItem("lastCalcProcess")));
+    }
     if (window.innerWidth >= 768) {
       setDragDisable(false);
     } else {
@@ -24,6 +28,9 @@ function App() {
     }
     return dragDisable;
   }, [dragDisable]);
+
+  // 自己想做的: 之前計算的紀錄
+  console.log(calcHistory);
 
   // 按鍵功能設定
   // C 鍵功能
@@ -79,15 +86,15 @@ function App() {
     if (calcProcess.length === 0) return;
     let arr = [...calcProcess, inputNumStr];
 
-    // 第一次先用 eval 做。
-    // TODO: 晚點再想想看 eval 之外的寫法。 (done)
-    // 參考 MDN 的作法 https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/eval
-    // 改用 window.Function() 寫，用 try...catch 處理算式寫錯或不完整的例外
     setCalcProcess(arr);
+    // 把最近一次按「 = 」時的算式存在 localStorage ，重新整理時讓 useEffect 去設定
+    localStorage.setItem("lastCalcProcess", JSON.stringify(arr));
 
     let numStr = 0;
 
+    // 用 try...catch 來處理運算不是數字的狀況，傳回「這不是四則運算」。
     try {
+      // 把陣列裡的字串變成 JS 可以運算的 code
       numStr = window.Function(
         "return (" +
           arr.join(" ").toString() +
@@ -99,30 +106,20 @@ function App() {
       numStr = "這不是四則運算";
     }
 
+    saveHistory();
+
     setInputNumStr(numStr);
 
-    // 自己想做的: 之前計算的紀錄
-    // console.log("calcHistory", calcHistory);
-    // console.log("calcProcess", calcProcess);
-    // console.log("inputNumStr", inputNumStr);
-
-    // if (calcHistory.length === 0) {
-    //   setCalcHistory([
-    //     {
-    //       calcPr: calcProcess.push(inputNumStr),
-    //       calcResult: num,
-    //     },
-    //   ]);
-    // } else {
-    //   setCalcHistory(
-    //     Array.from(calcHistory).push({
-    //       calcPr: calcProcess.push(inputNumStr),
-    //       calcResult: num,
-    //     })
-    //   );
-    // }
-
     setIsProcessed(!isProcessed);
+  };
+
+  // Save history
+  console.log("history: ", calcHistory);
+  const saveHistory = () => {
+    console.log(calcProcess);
+    let arr2 = [...calcHistory];
+    arr2.push([...calcProcess, inputNumStr]);
+    setCalcHistory(arr2);
   };
 
   return (
