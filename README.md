@@ -1,5 +1,7 @@
 # 作業：計算機功能的網頁
 
+Github page 連結： https://jchans.github.io/calc-example/
+
 ## Spec
 
 1. 計算機裡的功能 +, -, \*, /, =, clear(C)
