@@ -8,18 +8,13 @@ function CalcHistoryBar(props) {
     calcHistory,
     setCalcHistory,
     historyId,
+    setIsProcessed,
   } = props;
 
   return (
-    <form
-      className="bg-orange-100 rounded px-3 pt-2 pb-2 m-1 flex place-content-between"
-      onClick={() => {
-        setCalcProcess(calcHisElement);
-        setInputNumStr("");
-      }}
-    >
+    <form className="bg-orange-100 rounded px-3 pt-2 pb-2 m-1 flex place-content-between">
       <div
-        className="flex-none block text-gray-700 text-sm font-bold text-right break-words mr-2"
+        className="block text-gray-700 text-sm font-bold text-right break-words mr-2"
         onClick={() => {
           console.log(historyId);
           let arr = [...calcHistory];
@@ -27,9 +22,16 @@ function CalcHistoryBar(props) {
           setCalcHistory(arr);
         }}
       >
-        <span className="border-2 border-orange-800 px-1 pb-0.5">x</span>
+        <span className="border-2 border-orange-800  px-1 pb-0.5">x</span>
       </div>
-      <label className="block text-gray-700 text-sm font-bold text-right break-words">
+      <label
+        className="flex-auto block text-gray-700 text-sm font-bold text-right break-words"
+        onClick={() => {
+          setCalcProcess(calcHisElement);
+          setInputNumStr("");
+          setIsProcessed(false);
+        }}
+      >
         {calcHisElement.join(" ")}
       </label>
     </form>

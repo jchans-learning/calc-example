@@ -16,12 +16,12 @@
   }
 }
 
-@media screen and (max-width: 540px) {
+/* @media screen and (max-width: 540px) {
   .calc-body {
     position: absolute;
     bottom: 0;
   }
-}
+} */
 
 @media screen and (max-width: 375px) {
   .calc-body {

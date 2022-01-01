@@ -120,20 +120,6 @@ function App() {
 
   return (
     <>
-      <div className="calc-history calc-body p-1 m-2 md:w-56 rounded overflow-auto">
-        <h2 className="text-center text-lg font-bold mb-2">計算紀錄</h2>
-        {calcHistory.map((element) => (
-          <CalcHistoryBar
-            calcHisElement={element}
-            key={calcHistory.indexOf(element)}
-            historyId={calcHistory.indexOf(element)}
-            calcHistory={calcHistory}
-            setCalcHistory={setCalcHistory}
-            setCalcProcess={setCalcProcess}
-            setInputNumStr={setInputNumStr}
-          />
-        ))}
-      </div>
       <Draggable disabled={dragDisable}>
         <div className="calc-body bg-gray-300 p-2 m-2 md:w-56 rounded overflow-auto">
           <h1 className="calc-title text-center text-lg font-bold mb-2">
@@ -201,6 +187,21 @@ function App() {
           </div>
         </div>
       </Draggable>
+      <div className="calc-history p-1 m-2 md:w-56 rounded overflow-auto">
+        <h2 className="text-center text-lg font-bold mb-2">計算紀錄</h2>
+        {calcHistory.map((element) => (
+          <CalcHistoryBar
+            calcHisElement={element}
+            key={calcHistory.indexOf(element)}
+            historyId={calcHistory.indexOf(element)}
+            calcHistory={calcHistory}
+            setCalcHistory={setCalcHistory}
+            setCalcProcess={setCalcProcess}
+            setInputNumStr={setInputNumStr}
+            setIsProcessed={setIsProcessed}
+          />
+        ))}
+      </div>
     </>
   );
 }
