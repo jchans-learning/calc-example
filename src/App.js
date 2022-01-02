@@ -23,7 +23,6 @@ function App() {
         localStorage.getItem("lastCalcProcess")
       ).calcProToSave;
       localStorage.removeItem("lastCalcProcess");
-      console.log(arr);
       try {
         setCalcProcess(arr);
       } catch (e) {
