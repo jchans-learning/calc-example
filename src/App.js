@@ -205,6 +205,9 @@ function App() {
                 buttonNumStr={"0"}
                 inputNumStr={inputNumStr}
                 setInputNumStr={setInputNumStr}
+                lastArith={lastArith}
+                setLastArith={setLastArith}
+                arithBtn={arithBtn}
                 calcProcess={calcProcess}
                 isProcessed={isProcessed}
               />
@@ -212,6 +215,9 @@ function App() {
                 buttonNumStr={"00"}
                 inputNumStr={inputNumStr}
                 setInputNumStr={setInputNumStr}
+                lastArith={lastArith}
+                setLastArith={setLastArith}
+                arithBtn={arithBtn}
                 calcProcess={calcProcess}
                 isProcessed={isProcessed}
               />
@@ -219,6 +225,9 @@ function App() {
                 buttonNumStr={"."}
                 inputNumStr={inputNumStr}
                 setInputNumStr={setInputNumStr}
+                lastArith={lastArith}
+                setLastArith={setLastArith}
+                arithBtn={arithBtn}
                 calcProcess={calcProcess}
                 isProcessed={isProcessed}
               />
