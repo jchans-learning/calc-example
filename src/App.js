@@ -19,12 +19,14 @@ function App() {
   useEffect(() => {
     // 確認 Local Storage 是不是有儲存之前的算式
     if (localStorage.getItem("lastCalcProcess")) {
+      let arr = JSON.parse(
+        localStorage.getItem("lastCalcProcess")
+      ).calcProToSave;
+      localStorage.removeItem("lastCalcProcess");
+      console.log(arr);
       try {
-        setCalcProcess(
-          JSON.parse(localStorage.getItem("lastCalcProcess")).calcProToSave
-        );
+        setCalcProcess(arr);
       } catch (e) {
-        localStorage.removeItem("lastCalcProcess");
         setCalcProcess([]);
       }
     }
