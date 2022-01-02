@@ -19,9 +19,14 @@ function App() {
   useEffect(() => {
     // 確認 Local Storage 是不是有儲存之前的算式
     if (localStorage.getItem("lastCalcProcess")) {
-      setCalcProcess(
-        JSON.parse(localStorage.getItem("lastCalcProcess")).calcProToSave
-      );
+      try {
+        setCalcProcess(
+          JSON.parse(localStorage.getItem("lastCalcProcess")).calcProToSave
+        );
+      } catch (e) {
+        localStorage.removeItem("lastCalcProcess");
+        setCalcProcess([]);
+      }
     }
 
     // 確認視窗大小來決定一開啟畫面的時候，計算機是否可拖拉，目前設定判斷點為 768px
