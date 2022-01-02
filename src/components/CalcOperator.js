@@ -8,7 +8,7 @@ function CalcOperator(props) {
     <div>
       <div>
         <button
-          className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 rounded md-css-adjust md:w-11 "
+          className="bg-gray-500 focus:bg-gray-700 text-white font-bold py-2 rounded md-css-adjust md:w-11 "
           onClick={() => {
             buttonFunc(buttonText);
 
