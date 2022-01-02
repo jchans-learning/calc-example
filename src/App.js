@@ -12,17 +12,19 @@ function App() {
   const [calcProcess, setCalcProcess] = useState([]);
   const [isProcessed, setIsProcessed] = useState(false);
   const [lastArith, setLastArith] = useState("");
-
-  console.log(lastArith);
-
-  // TODO: 自己想做的: 之前計算的紀錄 (done)
   const [calcHistory, setCalcHistory] = useState([]);
 
-  // 確認視窗大小來決定一開啟畫面的時候，計算機是否可拖拉，目前設定判斷點為 768px
+  const nowTime = new Date();
+
   useEffect(() => {
+    // 確認 Local Storage 是不是有儲存之前的算式
     if (localStorage.getItem("lastCalcProcess")) {
-      setCalcProcess(JSON.parse(localStorage.getItem("lastCalcProcess")));
+      setCalcProcess(
+        JSON.parse(localStorage.getItem("lastCalcProcess")).calcProToSave
+      );
     }
+
+    // 確認視窗大小來決定一開啟畫面的時候，計算機是否可拖拉，目前設定判斷點為 768px
     if (window.innerWidth >= 768) {
       setDragDisable(false);
     } else {
@@ -35,7 +37,7 @@ function App() {
   // C 鍵功能
   const clearInputStr = () => {
     setInputNumStr("");
-    if (isProcessed) setIsProcessed(false);
+    // if (isProcessed) setIsProcessed(false);
   };
 
   // 退位鍵，刪除輸入的一碼數字或者算式裡的一個數字或一個運算子
@@ -52,7 +54,7 @@ function App() {
       if (calcProcess.length === 0) {
         return;
       }
-      console.log(calcProcess);
+      // console.log(calcProcess);
       let arr = [...calcProcess];
       arr.pop();
       setCalcProcess(arr);
@@ -97,10 +99,22 @@ function App() {
     setIsProcessed(!isProcessed);
   };
 
+  // 小數處理
+
   // Turn Array to String then do calculations by window.Function()
+
   const arrToArith = (arr) => {
+    // 把算式存在 Local Storage ，重新整理的時候可以讀取，設定算式的存放期限，單位是 ms
+    // 目前設定留 15 秒
+    // TODO: 可能要用 useMemo 來處理，目前先移除時間超過後會移除 Local Storage 的部分。
+    const timeInMs = 15000;
+    const itemToLocalStorage = {
+      calcProToSave: arr,
+      expiry: nowTime.getTime() + timeInMs,
+    };
+    localStorage.setItem("lastCalcProcess", JSON.stringify(itemToLocalStorage));
+
     // 用 try...catch 來處理運算不是數字的狀況，如果陣列轉換成字串後沒辦法運算，傳回「這不是四則運算」。
-    localStorage.setItem("lastCalcProcess", JSON.stringify(arr));
 
     let numStr = 0;
     try {
@@ -111,7 +125,7 @@ function App() {
           arr.join(" ").toString() +
           " > 2 ** 32) ? '超過數字上限' : (" +
           arr.join(" ").toString() +
-          ").toFixed(2).toString()"
+          ").toString()"
       );
     } catch (e) {
       numStr = "這不是四則運算";
@@ -176,6 +190,7 @@ function App() {
                   lastArith={lastArith}
                   setLastArith={setLastArith}
                   arithBtn={arithBtn}
+                  calcProcess={calcProcess}
                   isProcessed={isProcessed}
                   key={number + 1}
                 />
@@ -185,18 +200,21 @@ function App() {
                 buttonNumStr={"0"}
                 inputNumStr={inputNumStr}
                 setInputNumStr={setInputNumStr}
+                calcProcess={calcProcess}
                 isProcessed={isProcessed}
               />
               <CalcButton
                 buttonNumStr={"00"}
                 inputNumStr={inputNumStr}
                 setInputNumStr={setInputNumStr}
+                calcProcess={calcProcess}
                 isProcessed={isProcessed}
               />
               <CalcButton
                 buttonNumStr={"."}
                 inputNumStr={inputNumStr}
                 setInputNumStr={setInputNumStr}
+                calcProcess={calcProcess}
                 isProcessed={isProcessed}
               />
             </div>

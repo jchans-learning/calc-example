@@ -7,8 +7,8 @@ function CalcButton(props) {
     inputNumStr,
     setInputNumStr,
     lastArith,
-    // setLastArith,
     arithBtn,
+    // calcProcess,
     isProcessed,
   } = props;
 
@@ -17,11 +17,14 @@ function CalcButton(props) {
       <button
         className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 rounded md-css-adjust md:w-11"
         onClick={() => {
+          // let checkLastItem = [...calcProcess].pop();
+          // console.log(checkLastItem);
           if (isProcessed) {
             arithBtn(lastArith);
             setInputNumStr(buttonNumStr);
             return;
           }
+
           setInputNumStr(inputNumStr + buttonNumStr);
         }}
       >

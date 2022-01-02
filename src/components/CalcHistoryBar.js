@@ -16,7 +16,7 @@ function CalcHistoryBar(props) {
       <div
         className="block text-gray-700 text-sm font-bold text-right break-words mr-2"
         onClick={() => {
-          console.log(historyId);
+          // console.log(historyId);
           let arr = [...calcHistory];
           arr.splice(historyId, 1);
           setCalcHistory(arr);
