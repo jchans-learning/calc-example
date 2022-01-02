@@ -2,7 +2,7 @@ import React from "react";
 import "./button-style.css";
 
 function CalcOperator(props) {
-  const { buttonText, buttonFunc } = props;
+  const { buttonText, buttonFunc, setLastArith } = props;
 
   return (
     <div>
@@ -10,8 +10,14 @@ function CalcOperator(props) {
         <button
           className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 rounded md-css-adjust md:w-11 "
           onClick={() => {
-            // console.log(buttonText);
+            console.log(buttonText);
             buttonFunc(buttonText);
+
+            if (buttonText === "=") {
+              console.log("I'ts equal!");
+            } else {
+              setLastArith(buttonText);
+            }
           }}
         >
           {buttonText}

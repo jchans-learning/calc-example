@@ -11,15 +11,16 @@ function App() {
   const [inputNumStr, setInputNumStr] = useState("");
   const [calcProcess, setCalcProcess] = useState([]);
   const [isProcessed, setIsProcessed] = useState(false);
+  const [lastArith, setLastArith] = useState("");
 
-  // TODO: 自己想做的: 之前計算的紀錄
+  console.log(lastArith);
+
+  // TODO: 自己想做的: 之前計算的紀錄 (done)
   const [calcHistory, setCalcHistory] = useState([]);
-  // console.log(calcProcess);
 
   // 確認視窗大小來決定一開啟畫面的時候，計算機是否可拖拉，目前設定判斷點為 768px
   useEffect(() => {
     if (localStorage.getItem("lastCalcProcess")) {
-      // console.log(localStorage.getItem("lastCalcProcess"));
       setCalcProcess(JSON.parse(localStorage.getItem("lastCalcProcess")));
     }
     if (window.innerWidth >= 768) {
@@ -86,29 +87,37 @@ function App() {
 
     setCalcProcess(arr);
     // 把最近一次按「 = 」時的算式存在 localStorage ，重新整理時讓 useEffect 去設定
-    localStorage.setItem("lastCalcProcess", JSON.stringify(arr));
 
-    let numStr = 0;
-
-    // 用 try...catch 來處理運算不是數字的狀況，傳回「這不是四則運算」。
-    try {
-      // 把陣列裡的字串變成 JS 可以運算的 code
-      numStr = window.Function(
-        "return (" +
-          arr.join(" ").toString() +
-          " > 2 ** 32) ? '超過數字上限' : (" +
-          arr.join(" ").toString() +
-          ").toString()"
-      );
-    } catch (e) {
-      numStr = "這不是四則運算";
-    }
+    let numStr = arrToArith(arr);
 
     saveHistory();
 
     setInputNumStr(numStr);
 
     setIsProcessed(!isProcessed);
+  };
+
+  // Turn Array to String then do calculations by window.Function()
+  const arrToArith = (arr) => {
+    // 用 try...catch 來處理運算不是數字的狀況，如果陣列轉換成字串後沒辦法運算，傳回「這不是四則運算」。
+    localStorage.setItem("lastCalcProcess", JSON.stringify(arr));
+
+    let numStr = 0;
+    try {
+      // 把陣列裡的字串變成 JS 可以運算的 code
+      // 小數的處理目前是用 .toFixed(2) 把結果處理成只有兩位，但這個其實不精確，有待研究
+      numStr = window.Function(
+        "return (" +
+          arr.join(" ").toString() +
+          " > 2 ** 32) ? '超過數字上限' : (" +
+          arr.join(" ").toString() +
+          ").toFixed(2).toString()"
+      );
+    } catch (e) {
+      numStr = "這不是四則運算";
+    }
+
+    return numStr;
   };
 
   // Save history
@@ -140,9 +149,21 @@ function App() {
 
           <div className="flex">
             <div className="number-pad gap-1 flex flex-wrap">
-              <CalcOperator buttonText={"C"} buttonFunc={clearInputStr} />
-              <CalcOperator buttonText={"AC"} buttonFunc={allClear} />
-              <CalcOperator buttonText={"←"} buttonFunc={deleteOneNumChar} />
+              <CalcOperator
+                buttonText={"C"}
+                buttonFunc={clearInputStr}
+                setLastArith={setLastArith}
+              />
+              <CalcOperator
+                buttonText={"AC"}
+                buttonFunc={allClear}
+                setLastArith={setLastArith}
+              />
+              <CalcOperator
+                buttonText={"←"}
+                buttonFunc={deleteOneNumChar}
+                setLastArith={setLastArith}
+              />
 
               {/* 因為排版方便的關係，把 1~9 與 0 ， 00 ，小數點的按鈕分開寫。*/}
               {/* 重複的按鈕做了好幾次。 */}
@@ -152,6 +173,9 @@ function App() {
                   buttonNumStr={(number + 1).toString()}
                   inputNumStr={inputNumStr}
                   setInputNumStr={setInputNumStr}
+                  lastArith={lastArith}
+                  setLastArith={setLastArith}
+                  arithBtn={arithBtn}
                   isProcessed={isProcessed}
                   key={number + 1}
                 />
@@ -178,11 +202,31 @@ function App() {
             </div>
 
             <div className="operators gap-1 flex flex-wrap justify-end">
-              <CalcOperator buttonText={"+"} buttonFunc={arithBtn} />
-              <CalcOperator buttonText={"-"} buttonFunc={arithBtn} />
-              <CalcOperator buttonText={"*"} buttonFunc={arithBtn} />
-              <CalcOperator buttonText={"/"} buttonFunc={arithBtn} />
-              <CalcOperator buttonText={"="} buttonFunc={calcResult} />
+              <CalcOperator
+                buttonText={"+"}
+                buttonFunc={arithBtn}
+                setLastArith={setLastArith}
+              />
+              <CalcOperator
+                buttonText={"-"}
+                buttonFunc={arithBtn}
+                setLastArith={setLastArith}
+              />
+              <CalcOperator
+                buttonText={"*"}
+                buttonFunc={arithBtn}
+                setLastArith={setLastArith}
+              />
+              <CalcOperator
+                buttonText={"/"}
+                buttonFunc={arithBtn}
+                setLastArith={setLastArith}
+              />
+              <CalcOperator
+                buttonText={"="}
+                buttonFunc={calcResult}
+                setLastArith={setLastArith}
+              />
             </div>
           </div>
         </div>

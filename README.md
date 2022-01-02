@@ -17,6 +17,7 @@ Github page 連結： https://jchans.github.io/calc-example/
 - [x] 基本計算機功能
   - [x] 加、減、乘
   - [x] 除法
+  - [ ] 小數的計算問題處理（例如 0.1 + 0.2 不是 0.3 的狀況，目前用 .toFixed(2) 把結果處理成只有兩位，但這個作法其實不精確，有待研究）
 - [x] 數字計算結果大於上限顯示「超過數字上限」。
 - [x] 算式的更新
 - [x] 計算結果的更新
@@ -24,6 +25,6 @@ Github page 連結： https://jchans.github.io/calc-example/
 - [x] 實作 Refresh 網頁之後，會顯示上一次計算的算式。
 - [ ] README 撰寫說明
 
-### 工作筆記
+### 專案說明
 
 - 目前是先把算式的部分用一個 array 儲存，然後用 eval 去運算結果。但是 eval 是一個有點危險的東西，可能運算的部分要改寫一下。後來改用 window.Function() 寫，用 try...catch 處理算式寫錯或不完整的例外。
