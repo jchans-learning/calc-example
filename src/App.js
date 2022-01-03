@@ -89,7 +89,12 @@ function App() {
 
   // " = " 的按鍵功能
   const calcResult = () => {
-    if (isProcessed) return;
+    if (isProcessed && inputNumStr !== "") {
+      setIsProcessed(false);
+      setCalcProcess([inputNumStr]);
+      setInputNumStr("");
+      return;
+    }
     if (calcProcess.length === 0) return;
     let arr = [...calcProcess, inputNumStr];
 
