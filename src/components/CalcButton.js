@@ -8,10 +8,8 @@ function CalcButton(props) {
     setInputNumStr,
     lastArith,
     arithBtn,
-    // calcProcess,
     isProcessed,
     isError,
-    // setIsError,
   } = props;
 
   return (
@@ -30,6 +28,7 @@ function CalcButton(props) {
             return;
           }
 
+          // 在運算後，如果沒有按運算紐直接按數字，預設使用上一次使用的運算子
           if (isProcessed) {
             arithBtn(lastArith);
             setInputNumStr(buttonNumStr);

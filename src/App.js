@@ -17,17 +17,17 @@ function App() {
   const [calcHistory, setCalcHistory] = useState([]);
   const [isError, setIsError] = useState(false);
 
-  // console.log(isError);
-
   const nowTime = new Date();
 
   useEffect(() => {
-    // 確認 Local Storage 是不是有儲存之前的算式
+    // 確認 Local Storage 是不是有儲存之前的算式，有的話則讀取，讀取後移除 Local Storage 的存檔
+    // 這樣重新整理兩次就會回到沒有存檔的狀態
     if (localStorage.getItem("lastCalcProcess")) {
       let arr = JSON.parse(
         localStorage.getItem("lastCalcProcess")
       ).calcProToSave;
       localStorage.removeItem("lastCalcProcess");
+      // 如果讀取檔案失敗，則預設把算式的部分設定為空陣列
       try {
         setCalcProcess(arr);
       } catch (e) {
@@ -44,15 +44,15 @@ function App() {
     return dragDisable;
   }, [dragDisable]);
 
-  // 按鍵功能設定
-  // C 鍵功能
+  // 按鍵功能函式
+  // C 鍵
   const clearInputStr = () => {
     setInputNumStr("");
     setIsError(false);
     // if (isProcessed) setIsProcessed(false);
   };
 
-  // 退位鍵，刪除輸入的一碼數字或者算式裡的一個數字或一個運算子
+  // 退位鍵
   const deleteOneNumChar = () => {
     if (isProcessed || isError) {
       setInputNumStr("");
@@ -60,21 +60,22 @@ function App() {
       setIsError(false);
       return;
     }
+
+    // 從個位數開始刪除輸入數字（因為是字串表示），如果已經沒有輸入數字，再刪除算式的東西
     if (inputNumStr !== "") {
       setInputNumStr(inputNumStr.slice(0, -1));
     } else {
       setIsProcessed(false);
-      if (calcProcess.length === 0) {
-        return;
-      }
-      // console.log(calcProcess);
+
+      // 如果算式長度不等於零，刪除算式陣列的一個陣列
+      if (calcProcess.length === 0) return;
       let arr = [...calcProcess];
       arr.pop();
       setCalcProcess(arr);
     }
   };
 
-  // AC 鍵功能
+  // AC 鍵
   const allClear = () => {
     setInputNumStr("");
     setCalcProcess([]);
@@ -82,7 +83,8 @@ function App() {
     setIsError(false);
   };
 
-  // 運算子按鈕功能
+  // 運算子（ +, -, *, / ）按鈕
+  // 把 buttonText 的 props 傳到算式陣列，如果還沒運算過，則把輸入欄的數字也加入算式
   const arithBtn = (arith) => {
     let arr = [...calcProcess];
     if (isProcessed === true) {
@@ -103,18 +105,20 @@ function App() {
       return;
     }
 
+    // 如果執行過運算，再按一次等於，可以把上次的結果變成新的算式陣列的第一個元素
+    // 目的是對上次運算的結果做計算，乘法與除法需要這個
     if (isProcessed && inputNumStr !== "") {
       setIsProcessed(false);
       setCalcProcess([inputNumStr]);
       setInputNumStr("");
       return;
     }
+
     if (calcProcess.length === 0) return;
     let arr = [...calcProcess, inputNumStr];
-
     setCalcProcess(arr);
-    // 把最近一次按「 = 」時的算式存在 localStorage ，重新整理時讓 useEffect 去設定
 
+    // 計算結果
     let numStr = arrToArith(arr);
 
     saveHistory();
@@ -122,36 +126,32 @@ function App() {
     setIsProcessed(!isProcessed);
   };
 
-  // Turn Array to String then do calculations by window.Function()
+  // 函式：把算式陣列轉換成字串來計算
   const arrToArith = (arr) => {
-    // 把算式存在 Local Storage ，重新整理的時候可以讀取，設定算式的存放期限，單位是 ms
-    // 目前設定留 15 秒
-    // 可能要研究用 useMemo 來處理。目前先不用時間管理，待研究。
+    // 把算式陣列 arr 存在 Local Storage 重新整理的時候可以讀取
+    // 設定算式的存放期限，單位是 ms ，目前設定 15 秒，目前還沒完成計時的功能，所以只是存了有效期限的設定。
     const timeInMs = 15000;
     const itemToLocalStorage = {
       calcProToSave: arr,
       expiry: nowTime.getTime() + timeInMs,
     };
+
     localStorage.setItem("lastCalcProcess", JSON.stringify(itemToLocalStorage));
-
     // 用 mathjs 套件處理算式的運算，設定小數運算的準確位數為 14 位
-
     let ans = "";
     let numStr = "";
-
     try {
       ans = evaluate(arr.join(" "));
       numStr = format(ans, { precision: 14 });
     } catch (e) {
-      console.log(e);
+      // console.log(e);
       setIsError(true);
       return (numStr = "計算錯誤: 請確認算式");
     }
-
     return numStr;
   };
 
-  // Save history
+  // 新增元素到算式歷史陣列
   const saveHistory = () => {
     let arr2 = [...calcHistory];
     arr2.push([...calcProcess, inputNumStr]);
@@ -199,8 +199,7 @@ function App() {
               />
 
               {/* 因為排版方便的關係，把 1~9 與 0 ， 00 ，小數點的按鈕分開寫。*/}
-              {/* 重複的按鈕做了好幾次。 */}
-              {/* TODO: 再想想可以怎麼改寫。 */}
+              {/* 重複的按鈕做了好幾次。再想想可以怎麼改寫。 */}
               {[...Array(9).keys()].map((number) => (
                 <CalcButton
                   buttonNumStr={(number + 1).toString()}
