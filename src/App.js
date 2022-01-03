@@ -135,8 +135,18 @@ function App() {
     localStorage.setItem("lastCalcProcess", JSON.stringify(itemToLocalStorage));
 
     // 用 mathjs 套件處理算式的運算，設定小數運算的準確位數為 14 位
-    let ans = evaluate(arr.join(" "));
-    let numStr = format(ans, { precision: 14 });
+
+    let ans = "";
+    let numStr = "";
+
+    try {
+      ans = evaluate(arr.join(" "));
+      numStr = format(ans, { precision: 14 });
+    } catch (e) {
+      console.log(e);
+      setIsError(true);
+      return (numStr = "計算錯誤: 請確認算式");
+    }
 
     return numStr;
   };
