@@ -148,6 +148,9 @@ function App() {
       setIsError(true);
       return (numStr = "計算錯誤: 請確認算式");
     }
+
+    if (numStr > 2 ** 32) numStr = "超過數字上限";
+
     return numStr;
   };
 
