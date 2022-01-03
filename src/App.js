@@ -127,22 +127,64 @@ function App() {
 
     // 用 try...catch 來處理運算不是數字的狀況，如果陣列轉換成字串後沒辦法運算，傳回「這不是四則運算」。
 
+    // 找出 arr 中最長的小數位數長度
+    let maxDecimalLength = 0;
+    arr.forEach((element) => {
+      try {
+        if (
+          Number(element) &&
+          element.split(".")[1].length > maxDecimalLength
+        ) {
+          maxDecimalLength = element.split(".")[1].length;
+        }
+      } catch (e) {
+        // 碰到運算符號的時候沒有特別要做的事情。
+      }
+    });
+
+    // 把陣列裡的字串變成 JS 可以運算的 code
+    // 小數的處理目前的 workaround 是，找出陣列裡最長的小數位數，最後取值的時候用 toFixed() 取最長的小數的兩倍的位數。
+    //
     let numStr = 0;
-    try {
-      // 把陣列裡的字串變成 JS 可以運算的 code
-      // 小數的處理目前是用 .toFixed(2) 把結果處理成只有兩位，但這個其實不精確，有待研究
-      numStr = window.Function(
-        "return (" +
-          arr.join(" ").toString() +
-          " > 2 ** 32) ? '超過數字上限' : (" +
-          arr.join(" ").toString() +
-          ").toString()"
-      );
-    } catch (e) {
-      numStr = "這不是四則運算";
+    if (maxDecimalLength === 0) {
+      try {
+        numStr = window.Function(
+          "return (" +
+            arr.join(" ").toString() +
+            " > 2 ** 32) ? '超過數字上限' : (" +
+            arr.join(" ").toString() +
+            ").toString()"
+        );
+      } catch (e) {
+        numStr = "計算錯誤";
+      }
+    } else {
+      try {
+        numStr = window.Function(
+          "return (" +
+            arr.join(" ").toString() +
+            " > 2 ** 32) ? '超過數字上限' : (" +
+            arr.join(" ").toString() +
+            ").toFixed(" +
+            (maxDecimalLength * 2).toString() +
+            ").toString()"
+        );
+      } catch (e) {
+        numStr = "計算錯誤";
+      }
     }
 
     return numStr;
+  };
+
+  // 處理小數位數多出來的零
+  const handleDecimalZeros = (str) => {
+    if (typeof str === "string" && str !== "") {
+      while (str.split(".")[1] && str.split("").pop() === "0") {
+        str = str.slice(0, -1);
+      }
+    }
+    return str;
   };
 
   // Save history
@@ -167,7 +209,11 @@ function App() {
             </form>
             <form className="bg-white rounded px-3 pt-2 pb-2 mb-2">
               <label className="input-display block text-gray-700 text-sm font-bold text-right break-words">
-                {inputNumStr === "" ? "0" : inputNumStr}
+                {isProcessed
+                  ? handleDecimalZeros(inputNumStr)
+                  : inputNumStr === ""
+                  ? "0"
+                  : inputNumStr}
               </label>
             </form>
           </div>
