@@ -2,9 +2,11 @@ import { useState, useEffect } from "react";
 import Draggable from "react-draggable";
 import CalcButton from "./components/CalcButton";
 import CalcOperator from "./components/CalcOperator";
+import CalcHistoryBar from "./components/CalcHistoryBar";
 
 import "./App.css";
-import CalcHistoryBar from "./components/CalcHistoryBar";
+
+import { evaluate, format } from "mathjs";
 
 function App() {
   const [dragDisable, setDragDisable] = useState(true);
@@ -13,6 +15,9 @@ function App() {
   const [isProcessed, setIsProcessed] = useState(false);
   const [lastArith, setLastArith] = useState("");
   const [calcHistory, setCalcHistory] = useState([]);
+  const [isError, setIsError] = useState(false);
+
+  // console.log(isError);
 
   const nowTime = new Date();
 
@@ -43,17 +48,19 @@ function App() {
   // C 鍵功能
   const clearInputStr = () => {
     setInputNumStr("");
+    setIsError(false);
     // if (isProcessed) setIsProcessed(false);
   };
 
   // 退位鍵，刪除輸入的一碼數字或者算式裡的一個數字或一個運算子
   const deleteOneNumChar = () => {
-    if (isProcessed) {
+    if (isProcessed || isError) {
       setInputNumStr("");
       setIsProcessed(false);
+      setIsError(false);
       return;
     }
-    if (Number(inputNumStr) !== 0) {
+    if (inputNumStr !== "") {
       setInputNumStr(inputNumStr.slice(0, -1));
     } else {
       setIsProcessed(false);
@@ -72,6 +79,7 @@ function App() {
     setInputNumStr("");
     setCalcProcess([]);
     setIsProcessed(false);
+    setIsError(false);
   };
 
   // 運算子按鈕功能
@@ -89,6 +97,12 @@ function App() {
 
   // " = " 的按鍵功能
   const calcResult = () => {
+    if (isError) {
+      setInputNumStr("");
+      setIsError(false);
+      return;
+    }
+
     if (isProcessed && inputNumStr !== "") {
       setIsProcessed(false);
       setCalcProcess([inputNumStr]);
@@ -104,20 +118,15 @@ function App() {
     let numStr = arrToArith(arr);
 
     saveHistory();
-
     setInputNumStr(numStr);
-
     setIsProcessed(!isProcessed);
   };
 
-  // 小數處理
-
   // Turn Array to String then do calculations by window.Function()
-
   const arrToArith = (arr) => {
     // 把算式存在 Local Storage ，重新整理的時候可以讀取，設定算式的存放期限，單位是 ms
     // 目前設定留 15 秒
-    // TODO: 可能要用 useMemo 來處理，目前先移除時間超過後會移除 Local Storage 的部分。
+    // 可能要研究用 useMemo 來處理。目前先不用時間管理，待研究。
     const timeInMs = 15000;
     const itemToLocalStorage = {
       calcProToSave: arr,
@@ -125,66 +134,11 @@ function App() {
     };
     localStorage.setItem("lastCalcProcess", JSON.stringify(itemToLocalStorage));
 
-    // 用 try...catch 來處理運算不是數字的狀況，如果陣列轉換成字串後沒辦法運算，傳回「這不是四則運算」。
-
-    // 找出 arr 中最長的小數位數長度
-    let maxDecimalLength = 0;
-    arr.forEach((element) => {
-      try {
-        if (
-          Number(element) &&
-          element.split(".")[1].length > maxDecimalLength
-        ) {
-          maxDecimalLength = element.split(".")[1].length;
-        }
-      } catch (e) {
-        // 碰到運算符號的時候沒有特別要做的事情。
-      }
-    });
-
-    // 把陣列裡的字串變成 JS 可以運算的 code
-    // 小數的處理目前的 workaround 是，找出陣列裡最長的小數位數，最後取值的時候用 toFixed() 取最長的小數的兩倍的位數。
-    //
-    let numStr = 0;
-    if (maxDecimalLength === 0) {
-      try {
-        numStr = window.Function(
-          "return (" +
-            arr.join(" ").toString() +
-            " > 2 ** 32) ? '超過數字上限' : (" +
-            arr.join(" ").toString() +
-            ").toString()"
-        );
-      } catch (e) {
-        numStr = "計算錯誤";
-      }
-    } else {
-      try {
-        numStr = window.Function(
-          "return (" +
-            arr.join(" ").toString() +
-            " > 2 ** 32) ? '超過數字上限' : (" +
-            arr.join(" ").toString() +
-            ").toFixed(" +
-            (maxDecimalLength * 2).toString() +
-            ").toString()"
-        );
-      } catch (e) {
-        numStr = "計算錯誤";
-      }
-    }
+    // 用 mathjs 套件處理算式的運算，設定小數運算的準確位數為 14 位
+    let ans = evaluate(arr.join(" "));
+    let numStr = format(ans, { precision: 14 });
 
     return numStr;
-  };
-
-  // 處理小數位數多出來的零
-  const handleDecimalZeros = (str) => {
-    if (typeof str === "string" && str !== "") {
-      while (str.split(".")[1] && str.split("").pop() === "0") {
-        str = str.slice(0, -1);
-      }
-    }
-    return str;
   };
 
   // Save history
@@ -209,11 +163,7 @@ function App() {
             </form>
             <form className="bg-white rounded px-3 pt-2 pb-2 mb-2">
               <label className="input-display block text-gray-700 text-sm font-bold text-right break-words">
-                {isProcessed
-                  ? handleDecimalZeros(inputNumStr)
-                  : inputNumStr === ""
-                  ? "0"
-                  : inputNumStr}
+                {inputNumStr === "" ? "0" : inputNumStr}
               </label>
             </form>
           </div>
@@ -234,6 +184,8 @@ function App() {
                 buttonText={"←"}
                 buttonFunc={deleteOneNumChar}
                 setLastArith={setLastArith}
+                isError={isError}
+                setIsError={setIsError}
               />
 
               {/* 因為排版方便的關係，把 1~9 與 0 ， 00 ，小數點的按鈕分開寫。*/}
@@ -249,6 +201,9 @@ function App() {
                   arithBtn={arithBtn}
                   calcProcess={calcProcess}
                   isProcessed={isProcessed}
+                  setIsProcessed={setIsProcessed}
+                  isError={isError}
+                  setIsError={setIsError}
                   key={number + 1}
                 />
               ))}
@@ -262,6 +217,9 @@ function App() {
                 arithBtn={arithBtn}
                 calcProcess={calcProcess}
                 isProcessed={isProcessed}
+                setIsProcessed={setIsProcessed}
+                isError={isError}
+                setIsError={setIsError}
               />
               <CalcButton
                 buttonNumStr={"00"}
@@ -272,6 +230,9 @@ function App() {
                 arithBtn={arithBtn}
                 calcProcess={calcProcess}
                 isProcessed={isProcessed}
+                setIsProcessed={setIsProcessed}
+                isError={isError}
+                setIsError={setIsError}
               />
               <CalcButton
                 buttonNumStr={"."}
@@ -282,6 +243,9 @@ function App() {
                 arithBtn={arithBtn}
                 calcProcess={calcProcess}
                 isProcessed={isProcessed}
+                setIsProcessed={setIsProcessed}
+                isError={isError}
+                setIsError={setIsError}
               />
             </div>
 
