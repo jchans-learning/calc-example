@@ -126,8 +126,6 @@ function App() {
 
       let numStr = arrToArith(arr);
 
-      console.log(arr);
-
       saveHistory([lastArith, lastInputNumStr]);
       setInputNumStr(numStr);
       setIsProcessed(!isProcessed);
@@ -171,7 +169,6 @@ function App() {
       // 定義有效位數為 14 位。在 e10 到 e-10 之間直接顯示數字而不使用科學記號。
       numStr = format(ans, { precision: 14, lowerExp: -10, upperExp: 10 });
     } catch (e) {
-      // console.log(e);
       setIsError(true);
       return (numStr = "計算錯誤: 請確認算式");
     }
@@ -185,12 +182,10 @@ function App() {
   const saveHistory = (inputArr) => {
     let arr2 = [...calcHistory];
     if (inputArr) {
-      console.log(inputArr);
       arr2.push([...calcProcess, ...inputArr]);
       setCalcHistory(arr2);
     } else {
       arr2.push([...calcProcess, lastInputNumStr]);
-      // console.log(arr2);
       setCalcHistory(arr2);
     }
   };
@@ -278,6 +273,7 @@ function App() {
               {["+", "-", "*", "/"].map((element) => (
                 <CalcOperator
                   buttonText={element}
+                  key={element}
                   buttonFunc={arithBtn}
                   setLastArith={setLastArith}
                 />
