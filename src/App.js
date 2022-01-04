@@ -15,11 +15,16 @@ import "./App.css";
 function App() {
   const [dragDisable, setDragDisable] = useState(true);
   const [inputNumStr, setInputNumStr] = useState("");
+  const [lastInputNumStr, setLastInputNumStr] = useState("");
   const [calcProcess, setCalcProcess] = useState([]);
   const [isProcessed, setIsProcessed] = useState(false);
   const [lastArith, setLastArith] = useState("");
   const [calcHistory, setCalcHistory] = useState([]);
   const [isError, setIsError] = useState(false);
+
+  console.log("isProcessed, rerendered:", isProcessed);
+  console.log(lastInputNumStr);
+  console.log(lastArith);
 
   const nowTime = new Date();
 
@@ -41,7 +46,6 @@ function App() {
 
     // 確認視窗大小來決定一開啟畫面的時候，計算機是否可拖拉，目前設定判斷點為 768px
     const checkDragByWindowSize = () => {
-      console.log(window.innerWidth);
       if (window.innerWidth >= 768) {
         setDragDisable(false);
       } else {
@@ -114,12 +118,24 @@ function App() {
   const calcResult = () => {
     if (isError) {
       setInputNumStr("");
-      setIsError(false);
       return;
     }
 
     // 如果執行過運算，再按一次等於，可以把上次的結果變成新的算式陣列的第一個元素
     // 目的是對上次運算的結果做計算，乘法與除法需要這個
+    if (!isProcessed && inputNumStr === "" && calcProcess.length === 1) {
+      // 算式只有上次計算的結果，而且輸入值為零的時，按等於會重複使用上次的運算與輸入
+      let arr = [...calcProcess, lastArith, lastInputNumStr];
+      setCalcProcess(arr);
+
+      let numStr = arrToArith(arr);
+
+      console.log(arr);
+
+      setInputNumStr(numStr);
+      setIsProcessed(!isProcessed);
+      return;
+    }
     if (isProcessed && inputNumStr !== "") {
       setIsProcessed(false);
       setCalcProcess([inputNumStr]);
@@ -170,7 +186,7 @@ function App() {
   // 新增元素到算式歷史陣列
   const saveHistory = () => {
     let arr2 = [...calcHistory];
-    arr2.push([...calcProcess, inputNumStr]);
+    arr2.push([...calcProcess, lastInputNumStr]);
     setCalcHistory(arr2);
   };
 
@@ -221,6 +237,7 @@ function App() {
                   buttonNumStr={(number + 1).toString()}
                   inputNumStr={inputNumStr}
                   setInputNumStr={setInputNumStr}
+                  setLastInputNumStr={setLastInputNumStr}
                   lastArith={lastArith}
                   setLastArith={setLastArith}
                   arithBtn={arithBtn}
@@ -233,45 +250,23 @@ function App() {
                 />
               ))}
 
-              <CalcButton
-                buttonNumStr={"0"}
-                inputNumStr={inputNumStr}
-                setInputNumStr={setInputNumStr}
-                lastArith={lastArith}
-                setLastArith={setLastArith}
-                arithBtn={arithBtn}
-                calcProcess={calcProcess}
-                isProcessed={isProcessed}
-                setIsProcessed={setIsProcessed}
-                isError={isError}
-                setIsError={setIsError}
-              />
-              <CalcButton
-                buttonNumStr={"00"}
-                inputNumStr={inputNumStr}
-                setInputNumStr={setInputNumStr}
-                lastArith={lastArith}
-                setLastArith={setLastArith}
-                arithBtn={arithBtn}
-                calcProcess={calcProcess}
-                isProcessed={isProcessed}
-                setIsProcessed={setIsProcessed}
-                isError={isError}
-                setIsError={setIsError}
-              />
-              <CalcButton
-                buttonNumStr={"."}
-                inputNumStr={inputNumStr}
-                setInputNumStr={setInputNumStr}
-                lastArith={lastArith}
-                setLastArith={setLastArith}
-                arithBtn={arithBtn}
-                calcProcess={calcProcess}
-                isProcessed={isProcessed}
-                setIsProcessed={setIsProcessed}
-                isError={isError}
-                setIsError={setIsError}
-              />
+              {["0", "00", "."].map((element) => (
+                <CalcButton
+                  buttonNumStr={element}
+                  inputNumStr={inputNumStr}
+                  setInputNumStr={setInputNumStr}
+                  setLastInputNumStr={setLastInputNumStr}
+                  lastArith={lastArith}
+                  setLastArith={setLastArith}
+                  arithBtn={arithBtn}
+                  calcProcess={calcProcess}
+                  isProcessed={isProcessed}
+                  setIsProcessed={setIsProcessed}
+                  isError={isError}
+                  setIsError={setIsError}
+                  key={element}
+                />
+              ))}
             </div>
 
             <div className="operators gap-1 flex flex-wrap justify-end">

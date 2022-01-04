@@ -6,6 +6,7 @@ function CalcButton(props) {
     buttonNumStr,
     inputNumStr,
     setInputNumStr,
+    setLastInputNumStr,
     lastArith,
     arithBtn,
     isProcessed,
@@ -23,10 +24,12 @@ function CalcButton(props) {
           if (isProcessed) {
             arithBtn(lastArith);
             setInputNumStr(buttonNumStr);
+            setLastInputNumStr(inputNumStr + buttonNumStr);
             return;
           }
 
           setInputNumStr(inputNumStr + buttonNumStr);
+          setLastInputNumStr(inputNumStr + buttonNumStr);
         }}
       >
         {buttonNumStr}
