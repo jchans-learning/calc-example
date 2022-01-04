@@ -128,6 +128,7 @@ function App() {
 
       console.log(arr);
 
+      saveHistory([lastArith, lastInputNumStr]);
       setInputNumStr(numStr);
       setIsProcessed(!isProcessed);
       return;
@@ -167,7 +168,8 @@ function App() {
     let numStr = "";
     try {
       ans = evaluate(arr.join(" "));
-      numStr = format(ans, { precision: 14 });
+      // 定義有效位數為 14 位。在 e10 到 e-10 之間直接顯示數字而不使用科學記號。
+      numStr = format(ans, { precision: 14, lowerExp: -10, upperExp: 10 });
     } catch (e) {
       // console.log(e);
       setIsError(true);
@@ -180,10 +182,17 @@ function App() {
   };
 
   // 新增元素到算式歷史陣列
-  const saveHistory = () => {
+  const saveHistory = (inputArr) => {
     let arr2 = [...calcHistory];
-    arr2.push([...calcProcess, lastInputNumStr]);
-    setCalcHistory(arr2);
+    if (inputArr) {
+      console.log(inputArr);
+      arr2.push([...calcProcess, ...inputArr]);
+      setCalcHistory(arr2);
+    } else {
+      arr2.push([...calcProcess, lastInputNumStr]);
+      // console.log(arr2);
+      setCalcHistory(arr2);
+    }
   };
 
   return (
@@ -266,26 +275,14 @@ function App() {
             </div>
 
             <div className="operators gap-1 flex flex-wrap justify-end">
-              <CalcOperator
-                buttonText={"+"}
-                buttonFunc={arithBtn}
-                setLastArith={setLastArith}
-              />
-              <CalcOperator
-                buttonText={"-"}
-                buttonFunc={arithBtn}
-                setLastArith={setLastArith}
-              />
-              <CalcOperator
-                buttonText={"*"}
-                buttonFunc={arithBtn}
-                setLastArith={setLastArith}
-              />
-              <CalcOperator
-                buttonText={"/"}
-                buttonFunc={arithBtn}
-                setLastArith={setLastArith}
-              />
+              {["+", "-", "*", "/"].map((element) => (
+                <CalcOperator
+                  buttonText={element}
+                  buttonFunc={arithBtn}
+                  setLastArith={setLastArith}
+                />
+              ))}
+
               <CalcOperator
                 buttonText={"="}
                 buttonFunc={calcResult}
