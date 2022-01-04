@@ -40,20 +40,29 @@ function App() {
     }
 
     // 確認視窗大小來決定一開啟畫面的時候，計算機是否可拖拉，目前設定判斷點為 768px
-    if (window.innerWidth >= 768) {
-      setDragDisable(false);
-    } else {
-      setDragDisable(true);
-    }
-    return dragDisable;
-  }, [dragDisable]);
+    const checkDragByWindowSize = () => {
+      console.log(window.innerWidth);
+      if (window.innerWidth >= 768) {
+        setDragDisable(false);
+      } else {
+        setDragDisable(true);
+      }
+    };
+
+    checkDragByWindowSize();
+
+    window.addEventListener("resize", checkDragByWindowSize);
+
+    return () => {
+      window.removeEventListener("resize", checkDragByWindowSize);
+    };
+  }, [setDragDisable, setCalcProcess]);
 
   // 按鍵功能函式
   // C 鍵
   const clearInputStr = () => {
     setInputNumStr("");
     setIsError(false);
-    // if (isProcessed) setIsProcessed(false);
   };
 
   // 退位鍵
