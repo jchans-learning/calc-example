@@ -16,6 +16,8 @@ Github page 連結： https://jchans.github.io/calc-example/
 8. 可以點選「 x 」刪除個別紀錄條。
 9. Refresh 頁面的時候，會清空計算紀錄區，但是在算式會保留最後一次計算的算式。第二次 Refresh 不會保留算式。
 
+![PC畫面中的編輯紀錄 demo ](demo_pc_edit.gif)
+
 ### 詳細需求 Spec
 
 1. 請製作一個計算機功能的網頁，包含計算機裡的功能 +, -, \*, /, =, clear(C)
