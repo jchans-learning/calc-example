@@ -22,10 +22,6 @@ function App() {
   const [calcHistory, setCalcHistory] = useState([]);
   const [isError, setIsError] = useState(false);
 
-  console.log("isProcessed, rerendered:", isProcessed);
-  console.log(lastInputNumStr);
-  console.log(lastArith);
-
   const nowTime = new Date();
 
   useEffect(() => {
