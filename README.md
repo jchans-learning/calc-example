@@ -1,4 +1,4 @@
-# 作業：計算機功能的網頁
+# 作業：網頁版計算機
 
 Github page 連結： https://jchans.github.io/calc-example/
 
