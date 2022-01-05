@@ -55,7 +55,7 @@ Github page 連結： https://jchans.github.io/calc-example/
 - 拖拉與視窗大小改變的調整：
   - 電腦版拖拉的控制可能可以微調得更細緻，讓 iPad 等平板的畫面中也可以正常拖拉與計算，目前在平板上可以拖拉，但是無法計算。
   - 電腦版在調整視窗大小加上拖拉的時候的切版。待研究。偵測視窗大小的設定與反應的方式。
-- 實作 Refresh 後保留先前資料的部分，一開始嘗試用有效期限去管理 Local Storage 儲存的資料，因為 useEffect 除理 new Date() 的部分的過多 render 次數，待研究處理方式。目前設定為第一次
+- 實作 Refresh 後保留先前資料的部分，一開始嘗試用有效期限去管理 Local Storage 儲存的資料，因為 useEffect 除理 new Date() 的部分的過多 render 次數，待研究處理方式。目前設定為取出 Local Storage 的資料後會移除 Local Storage 的內容，也就是重新整理第一次會讀取之前的算式，第二次就會清空。
 
 ## ToDo
 
